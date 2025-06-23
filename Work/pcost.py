@@ -9,25 +9,24 @@ def portfolio_cost(filename):
     and returns the total cost of the portfolio as a float"""
 
     total_cost = 0.0
-    try:
-        with open(filename, 'rt') as f:
-            rows = csv.reader(f)
-            headers = next(rows)
-            for row in rows:
-                total_cost += float(row[1]) * float(row[2])
-            # print(f'Total cost {total_cost:.2f}')
-            return total_cost
-    except FileNotFoundError:
-        print(f'File {filename} not found.')
-        return 0.0
-    except ValueError as e:
-        print(f'Error processing file {filename}: {e}')
-        return 0.0
+    with open(filename, 'rt') as f:
+        rows = csv.reader(f)
+        headers = next(rows)
+        for rowno, row in enumerate(rows, start=1):
+            record = dict(zip(headers, row))
+            try:
+                nshares = int(record['shares'])
+                price = float(record['price'])
+                total_cost += nshares * price
+            except ValueError as e:
+                print(f'Row {rowno}: Bad row: {row}')
+                return 0.0
+    return total_cost
         
-if len(sys.argv) == 2:
-    filename = sys.argv[1]
-else:
-    filename = 'Data/portfolio.csv'        
+# if len(sys.argv) == 2:
+#     filename = sys.argv[1]
+# else:
+#     filename = 'Data/portfolio.csv'        
         
-cost=portfolio_cost(filename)
-print(f'Total cost: {cost:.2f}')
+# cost=portfolio_cost(filename)
+# print(f'Total cost: {cost:.2f}')
